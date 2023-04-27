@@ -8,6 +8,7 @@ const options = {
   },
 }
 
+let page = 1;
 
 const elements = {
   filmWrapper: document.querySelector(".films"),
@@ -16,8 +17,6 @@ const elements = {
 }
 
 async function fetchData(url, options) {
-
-
   const response = await fetch(url, options);
   const data = await response.json();
   return data
@@ -26,11 +25,15 @@ async function fetchData(url, options) {
 
 async function fetchAndRender() {
   elements.loader.classList.remove("none");
-  const data = await fetchData(url + 'top', options);
+  const data = await fetchData(url + `top?page=${page}`, options);
+  if (data.pagesCount > 1) page++;
   renderFilms(data.films);
-  if (data.pagesCount > 1) elements.showMoreButton.classList.remove("none");
+  if (data.pagesCount > 1 && data.pagesCount > page) elements.showMoreButton.classList.remove("none");
   elements.loader.classList.add("none");
 }
+
+
+
 
 function renderFilms(films) {
   for (film of films) {
@@ -47,3 +50,7 @@ function renderFilms(films) {
 
 
 fetchAndRender().catch(err => console.log(err));
+
+elements.showMoreButton.addEventListener("click", () => {
+  fetchAndRender().catch(err => console.log(err));
+})
