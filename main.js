@@ -11,9 +11,13 @@ const options = {
 
 const elements = {
   filmWrapper: document.querySelector(".films"),
+  loader: document.querySelector(".loader-wrapper"),
+  showMoreButton: document.querySelector(".show-more"),
 }
 
 async function fetchData(url, options) {
+
+
   const response = await fetch(url, options);
   const data = await response.json();
   return data
@@ -21,8 +25,11 @@ async function fetchData(url, options) {
 
 
 async function fetchAndRender() {
-  const data = await fetchData(url + 'top', options)
-  renderFilms(data.films)
+  elements.loader.classList.remove("none");
+  const data = await fetchData(url + 'top', options);
+  renderFilms(data.films);
+  if (data.pagesCount > 1) elements.showMoreButton.classList.remove("none");
+  elements.loader.classList.add("none");
 }
 
 function renderFilms(films) {
@@ -34,7 +41,6 @@ function renderFilms(films) {
                   <p class="film-card__rating">Рейтинг ${film.rating}</p>
                   </div>`
 
-    console.log(html)
     elements.filmWrapper.insertAdjacentHTML("beforeend", html)
   }
 }
